@@ -251,6 +251,7 @@ node dist/server.js
 - [API Reference](./docs/api-reference.md)
 - [Editor Visual - Guía](./docs/visual-editor.md)
 - [Sistema de Plantillas](./docs/templates.md)
+- - [🤖 Guía de Creación de Bots](./BOT-CREATION-GUIDE.md)
 - [Integración Dominios](./docs/domain-api.md)
 - [Despliegue Automático](./docs/deployment.md)
 
