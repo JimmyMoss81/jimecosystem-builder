@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "profile_id": "jarvis.huggingface.zero-cost",
+  "enabled_capabilities": {
+    "public_hub_discovery": true,
+    "model_card_and_license_review": true,
+    "dataset_card_review": true,
+    "public_repository_versioning": true,
+    "local_model_download_after_review": true,
+    "local_inference": true,
+    "static_spaces": true
+  },
+  "disabled_to_preserve_zero_cost": {
+    "inference_providers": true,
+    "inference_endpoints": true,
+    "paid_gpu_or_accelerators": true,
+    "paid_spaces": true,
+    "zero_gpu_features_requiring_paid_plan": true,
+    "pro_team_or_enterprise_subscriptions": true,
+    "pay_as_you_go_storage_or_compute": true
+  },
+  "security": {
+    "remote_model_code_default": "deny",
+    "trust_remote_code": false,
+    "tokens_in_plaintext": false
+  }
+}
