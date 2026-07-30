@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "policy_id": "jimecosystem.web-design-sync",
+  "canonical_authority": "approved Git repository",
+  "sync_direction": "canonical_to_registered_targets",
+  "bidirectional_sync": false,
+  "required_pipeline": [
+    "discover",
+    "snapshot",
+    "compare hashes",
+    "validate cost zero",
+    "validate design tokens",
+    "validate content and links",
+    "validate accessibility",
+    "build preview",
+    "human review",
+    "promote",
+    "record version and rollback"
+  ],
+  "conflict_policy": "stop and require source-of-truth decision",
+  "production_write": "disabled_until_explicit_site_and_version_approval"
+}
