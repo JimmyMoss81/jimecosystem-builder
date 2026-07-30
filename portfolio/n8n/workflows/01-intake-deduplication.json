@@ -1,0 +1,168 @@
+{
+  "name": "Portfolio 01 - Validated Intake and Deduplication",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "portfolio-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Receive Intake",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const b = $json.body ?? $json;\nconst required = ['client_name','task_type','due_date'];\nconst missing = required.filter(k => !String(b[k] ?? '').trim());\nconst source = String(b.source_id ?? required.map(k => b[k]).join('|'));\nlet hash = 2166136261;\nfor (const c of source) { hash ^= c.charCodeAt(0); hash = Math.imul(hash,16777619); }\nreturn [{json:{valid:missing.length===0,missing,record:{\n idempotency_key:'intake-'+(hash>>>0).toString(16),\n client_name:String(b.client_name??'').trim(),\n task_type:String(b.task_type??'').trim().toLowerCase(),\n due_date:String(b.due_date??'').trim(),\n priority:['low','normal','high','urgent'].includes(String(b.priority??'').toLowerCase())?String(b.priority).toLowerCase():'normal',\n notes:String(b.notes??'').trim(),received_at:new Date().toISOString()\n}}}];"
+      },
+      "id": "normalize",
+      "name": "Validate and Normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "valid",
+      "name": "Payload Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const store=$getWorkflowStaticData('global'); store.keys??={};\nconst key=$json.record.idempotency_key; const duplicate=Boolean(store.keys[key]);\nif(!duplicate) store.keys[key]=new Date().toISOString();\nreturn [{json:{...$json,duplicate}}];"
+      },
+      "id": "dedupe",
+      "name": "Prevent Duplicates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {ok:true,duplicate:$json.duplicate,record:$json.record} }}",
+        "options": {}
+      },
+      "id": "ok",
+      "name": "Return Safe Result",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {ok:false,error:'missing_required_fields',missing:$json.missing} }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "bad",
+      "name": "Return Validation Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        720,
+        140
+      ]
+    }
+  ],
+  "connections": {
+    "Receive Intake": {
+      "main": [
+        [
+          {
+            "node": "Validate and Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate and Normalize": {
+      "main": [
+        [
+          {
+            "node": "Payload Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload Valid?": {
+      "main": [
+        [
+          {
+            "node": "Prevent Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Validation Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prevent Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Return Safe Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}
