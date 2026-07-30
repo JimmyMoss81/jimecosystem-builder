@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "policy_id": "jimecosystem.absolute-zero-cost",
+  "currency_limits": {
+    "EUR": 0,
+    "USD": 0
+  },
+  "enforcement": "deny_by_default",
+  "rules": {
+    "paid_api_calls": false,
+    "pay_as_you_go": false,
+    "credit_purchase": false,
+    "subscription_purchase": false,
+    "automatic_renewal": false,
+    "automatic_upgrade": false,
+    "card_or_billing_method_required": false,
+    "trial_that_can_convert_to_paid": false,
+    "usage_without_proven_hard_spend_cap": false,
+    "fallback_to_paid_provider": false
+  },
+  "on_uncertain_cost": "block",
+  "on_quota_exhaustion": "stop_without_fallback"
+}
