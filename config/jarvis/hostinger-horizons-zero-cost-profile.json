@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "profile_id": "jarvis.hostinger-horizons.zero-cost-adapter",
+  "facts_and_limits": {
+    "free_prototyping_available": true,
+    "free_plan_can_publish_live_site": false,
+    "live_hosting_requires_active_plan": true,
+    "export_format": "React and Vite ZIP",
+    "edited_code_can_be_reimported_to_horizons": false,
+    "bidirectional_sync_supported": false
+  },
+  "zero_cost_mode": {
+    "horizons_ai_generation_default": "disabled",
+    "purchase_or_top_up_credits": false,
+    "purchase_hosting": false,
+    "enable_subscription": false,
+    "publish_through_paid_hosting": false
+  },
+  "canonical_source": "approved Git repository",
+  "horizons_role": "optional one-way prototype source only"
+}
