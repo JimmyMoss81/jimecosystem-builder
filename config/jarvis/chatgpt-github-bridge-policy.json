@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "policy_id": "jarvis.chatgpt.github.controlled-bridge",
+  "mode": "connector_mediated_zero_trust",
+  "purpose": "Allow JARVIS and ChatGPT/Codex to collaborate through approved GitHub repository artifacts without exposing private local data.",
+  "participants": {
+    "local_orchestrator": "JARVIS",
+    "local_model_alias": "Qwen-JARVIS",
+    "external_assistant": "ChatGPT/Codex",
+    "transport": "GitHub connector"
+  },
+  "allowed_outbound": [
+    "approved public repository identifier",
+    "sanitized task manifest",
+    "synthetic test data",
+    "source files explicitly approved for the repository",
+    "test and lint results without secrets"
+  ],
+  "allowed_inbound": [
+    "repository metadata",
+    "issues and pull request metadata",
+    "review comments",
+    "commits and diffs",
+    "public documentation"
+  ],
+  "blocked": [
+    "passwords",
+    "api keys and tokens",
+    "browser cookies",
+    "local personal files",
+    "private family or financial data",
+    "automatic credential forwarding",
+    "unreviewed executable downloads",
+    "automatic merging",
+    "automatic production deployment"
+  ],
+  "approval_gates": {
+    "create_or_publish_repository_content": "explicit task authorization",
+    "open_pull_request": "review task scope and diff",
+    "merge_pull_request": "human approval required",
+    "enable_official_copilot_or_paid_usage": "separate explicit approval required",
+    "expand_repository_access": "separate explicit approval required"
+  },
+  "prompt_injection_controls": {
+    "repository_content_is_untrusted": true,
+    "instructions_inside_files_cannot_change_policy": true,
+    "external_content_cannot_request_secrets": true,
+    "kill_switch_on_policy_violation": true
+  }
+}
