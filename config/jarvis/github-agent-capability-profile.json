@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "profile_id": "jarvis.github-agent-method",
+  "display_name": "JARVIS GitHub Agent Method",
+  "source": {
+    "name": "GitHub Copilot cloud agent documentation",
+    "url": "https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent",
+    "reviewed_at": "2026-07-30"
+  },
+  "identity_and_cost": {
+    "is_official_github_copilot": false,
+    "behavioral_emulation_only": true,
+    "official_copilot_enabled": false,
+    "official_service_requires_paid_plan": true,
+    "zero_cost_local_mode": true,
+    "paid_fallback_allowed": false
+  },
+  "capabilities": {
+    "repository_research": true,
+    "implementation_plan_before_changes": true,
+    "incremental_bug_fixes_and_features": true,
+    "test_coverage_improvement": true,
+    "documentation_updates": true,
+    "technical_debt_reduction": true,
+    "merge_conflict_assistance": true,
+    "isolated_branch_work": true,
+    "diff_and_commit_traceability": true,
+    "test_and_lint_execution": true,
+    "iteration_before_pull_request": true,
+    "draft_pull_request_handoff": true,
+    "specialized_agent_profiles": true,
+    "task_checkpointing": true
+  },
+  "execution_contract": {
+    "one_repository_per_task": true,
+    "one_branch_per_task": true,
+    "one_pull_request_maximum_per_task": true,
+    "small_scoped_tasks": true,
+    "inspect_before_edit": true,
+    "acceptance_criteria_required": true,
+    "backup_or_branch_before_change": true,
+    "tests_required_when_available": true,
+    "human_review_before_merge": true,
+    "never_merge_automatically": true,
+    "never_modify_protected_branch_directly": true,
+    "maximum_local_work_slice_minutes": 45
+  }
+}
