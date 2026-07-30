@@ -1,0 +1,168 @@
+{
+  "name": "Portfolio 02 - Supervised Newsletter Production",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "portfolio-newsletter",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Receive Brief",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const b=$json.body??$json; const topic=String(b.topic??'').trim(); const audience=String(b.audience??'').trim();\nif(!topic||!audience) return [{json:{ok:false,missing:[!topic&&'topic',!audience&&'audience'].filter(Boolean)}}];\nconst base=String(b.base_url??'https://example.invalid').replace(/\\/$/,'');\nconst campaign=String(b.campaign??topic).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');\nreturn [{json:{ok:true,brief:{topic,audience,goal:String(b.goal??'inform and invite review'),cta:String(b.cta??'Review the proposal'),base,campaign},audit:{generated_at:new Date().toISOString(),mode:'deterministic_no_paid_ai',approval_required:true}}}];"
+      },
+      "id": "validate",
+      "name": "Validate Brief",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if",
+      "name": "Brief Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const {topic,audience,goal,cta,base,campaign}=$json.brief;\nconst link=base+'?utm_source=newsletter&utm_medium=email&utm_campaign='+encodeURIComponent(campaign);\nreturn [{json:{...$json,draft:{subject:topic+': a practical guide for '+audience,preview:'What changes, how to apply it, and what to verify.',body_markdown:'# '+topic+'\\n\\nPrepared for **'+audience+'**. Goal: '+goal+'.\\n\\n## Review\\n- Define the problem.\\n- Measure the expected result.\\n- Use minimum permissions.\\n- Pilot reversibly before scaling.\\n\\n'+cta+': '+link+'\\n\\n_Human review required before publication._',cta_url:link,status:'awaiting_human_review'}}}];"
+      },
+      "id": "draft",
+      "name": "Build Draft",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {ok:true,draft:$json.draft,audit:$json.audit} }}",
+        "options": {}
+      },
+      "id": "result",
+      "name": "Return Review Package",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {ok:false,error:'invalid_brief',missing:$json.missing} }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "error",
+      "name": "Return Brief Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        720,
+        140
+      ]
+    }
+  ],
+  "connections": {
+    "Receive Brief": {
+      "main": [
+        [
+          {
+            "node": "Validate Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Brief": {
+      "main": [
+        [
+          {
+            "node": "Brief Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brief Valid?": {
+      "main": [
+        [
+          {
+            "node": "Build Draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Brief Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Draft": {
+      "main": [
+        [
+          {
+            "node": "Return Review Package",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}
