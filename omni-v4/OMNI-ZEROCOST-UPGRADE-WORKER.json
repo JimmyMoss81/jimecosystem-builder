@@ -1,0 +1,72 @@
+{
+  "schema": "JIME.Worker/1.0",
+  "id": "OMNI-ZeroCost-Upgrade-Worker",
+  "version": "2026-10-16",
+  "state": "REGISTERED_POLICY_READY",
+  "mission": "Detectar novedades, reutilizar o integrar capacidades legales de coste 0, reparar o sustituir componentes degradados y reanudar automáticamente pipelines monetizables sin perder estado.",
+  "policy": {
+    "cost_zero_first": true,
+    "paid_actions_require_human_gate": true,
+    "reuse_before_create": true,
+    "read_before_write": true,
+    "truthgate_required": true,
+    "license_check_required": true,
+    "no_paid_feature_bypass": true,
+    "no_proprietary_code_cloning": true,
+    "no_usage_limit_evasion": true,
+    "no_regression": true,
+    "rollback_on_regression": true,
+    "resume_revenue_pipeline_after_upgrade": true
+  },
+  "pipeline": [
+    "DISCOVER_UPDATE",
+    "RECALL_EXISTING_CAPABILITY",
+    "DEDUP_OWNER",
+    "VERIFY_SOURCE",
+    "VERIFY_LICENSE_AND_ACCESS",
+    "SELECT_ZERO_COST_ROUTE",
+    "INTEGRATE_OR_BUILD_EQUIVALENT",
+    "CANARY",
+    "REGRESSION_TEST",
+    "POKA_YOKE",
+    "PROMOTE_IF_PASS",
+    "RECONNECT_OR_REPAIR",
+    "RESUME_MONETIZABLE_WORK",
+    "WRITE_LEDGER",
+    "UPDATE_RAG_OBSIDIAN_TAG",
+    "KAIZEN"
+  ],
+  "allowed_autonomous_actions": [
+    "restart_local_process",
+    "repair_local_path",
+    "reindex_rag",
+    "resync_obsidian_tag_ledger",
+    "restore_local_backup",
+    "reroute_to_available_zero_cost_model",
+    "replace_degraded_component_with_authorized_zero_cost_equivalent",
+    "relaunch_worker",
+    "resume_local_monetization_pipeline"
+  ],
+  "human_gate": [
+    "purchase",
+    "payment",
+    "financial_transfer",
+    "contract_acceptance",
+    "external_account_permission_change",
+    "credential_rotation_requiring_owner_interaction",
+    "external_publication_when_provider_requires_confirmation"
+  ],
+  "revenue_preservation": [
+    "leads",
+    "customers",
+    "verified_payments",
+    "assets",
+    "campaign_learning",
+    "deliverables",
+    "workflows",
+    "memory",
+    "rag",
+    "ledger",
+    "content"
+  ]
+}
