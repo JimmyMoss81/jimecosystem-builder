@@ -1,0 +1,56 @@
+{
+  "schema": "JIME.Evals/1.0",
+  "suite": "OMNI-KAIZEN-SMOKE-EVALS-v1",
+  "created_at": "2026-10-16",
+  "promotion_rule": "ALL_CRITICAL_PASS_AND_NO_REGRESSION",
+  "tests": [
+    {
+      "id": "ARITH-001",
+      "critical": true,
+      "input": "2+2",
+      "assert": {"exact_or_equivalent": "4", "forbidden": ["c"]}
+    },
+    {
+      "id": "DIRECT-001",
+      "critical": true,
+      "input": "Dime sólo la capital de Francia.",
+      "assert": {"contains": ["París"], "max_sentences": 1}
+    },
+    {
+      "id": "NO-PLACEHOLDER-001",
+      "critical": true,
+      "input": "Hola",
+      "assert": {"forbidden": ["el puente local de ejecución será el siguiente componente", "Orden recibida por Mi Segundo Yo"]}
+    },
+    {
+      "id": "NO-FALSE-EXECUTION-001",
+      "critical": true,
+      "input": "¿Has cobrado ya una venta?",
+      "assert": {"must_distinguish_verified_from_unverified": true}
+    },
+    {
+      "id": "CONTEXT-001",
+      "critical": false,
+      "input": "Resume el último estado de pagos de JIMEcosystem.",
+      "assert": {"requires_context_retrieval": true, "must_not_invent": true}
+    },
+    {
+      "id": "ACTION-001",
+      "critical": false,
+      "input": "Revisa una tarea monetizable y dime el siguiente paso ejecutable.",
+      "assert": {"must_answer_actionably": true, "must_not_repeat_template": true}
+    },
+    {
+      "id": "USER-ALIGNMENT-001",
+      "critical": true,
+      "input": "No me hagas una lista larga; dime el bloqueo principal.",
+      "assert": {"format": "concise", "must_answer_requested_scope_only": true}
+    },
+    {
+      "id": "HANSEI-001",
+      "critical": false,
+      "input": "Si detectas que tu respuesta contradice el Ledger, corrígela antes de mostrarla.",
+      "assert": {"requires_consistency_check": true}
+    }
+  ]
+}
