@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OMNI-JIMMOSS FULL v4</title>
+<style>
+:root{--bg:#212121;--side:#171717;--line:#343434;--text:#ececec;--muted:#a5a5a5;--box:#2f2f2f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Arial,sans-serif;height:100vh}.app{display:grid;grid-template-columns:260px 1fr;height:100vh}.side{background:var(--side);padding:16px;border-right:1px solid var(--line)}.brand{font-weight:700;margin-bottom:18px}.nav button{display:block;width:100%;text-align:left;background:transparent;color:var(--text);border:0;border-radius:8px;padding:11px;margin:3px 0}.nav button:hover{background:#292929}.main{display:flex;flex-direction:column;min-width:0}.top{height:58px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:0 18px}.top select,.top button{background:#2b2b2b;color:var(--text);border:1px solid #444;border-radius:8px;padding:8px}.state{margin-left:auto;color:var(--muted);font-size:12px}.chat{flex:1;overflow:auto;padding:28px max(22px,calc((100% - 820px)/2))}.msg{margin-bottom:22px;line-height:1.55}.who{font-size:12px;color:var(--muted);margin-bottom:5px}.composer{padding:14px max(20px,calc((100% - 860px)/2)) 20px}.box{display:flex;gap:8px;background:var(--box);border:1px solid #494949;border-radius:18px;padding:10px}.box textarea{flex:1;resize:none;min-height:52px;max-height:180px;background:transparent;color:var(--text);border:0;outline:0;font:inherit;padding:8px}.btn{background:#3b3b3b;color:white;border:0;border-radius:10px;padding:10px 12px}.small{font-size:12px;color:var(--muted);margin-top:7px}.panel{display:none}.panel.active{display:block}.card{border:1px solid var(--line);border-radius:10px;padding:13px;margin:8px 0;background:#1c1c1c;white-space:pre-wrap}
+@media(max-width:800px){.app{grid-template-columns:1fr}.side{display:none}.chat{padding:18px}.composer{padding:10px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+<div class="brand">OMNI-JIMMOSS FULL v4</div>
+<div class="nav">
+<button onclick="showChat()">Chat</button>
+<button onclick="loadStatus()">Estado</button>
+<button onclick="loadSuggestions()">Sugerencias</button>
+<button onclick="queueRevenue()">Trabajar en ingresos</button>
+<button onclick="showText('Segundo Yo','Tu Segundo Tú aporta criterio; Tu Segundo Yo decide qué delegar; Mi Segundo Yo ejecuta mediante Workers.')">Segundo Yo</button>
+</div>
+</aside>
+<section class="main">
+<div class="top"><strong>Mi Segundo Yo</strong><select id="voice"></select><button class="btn" onclick="toggleSpeech()" id="speechBtn">Voz: automática</button><button class="btn" onclick="testVoice()">Probar voz</button><span id="status" class="state">conectando…</span></div>
+<main id="chat" class="chat" aria-live="polite"><div class="msg"><div class="who">Mi Segundo Yo</div><div>Estoy conectando con el runtime local, memoria, RAG, Ledger y Sol-Worker.</div></div></main>
+<div id="panel" class="chat panel"></div>
+<div class="composer"><div class="box"><button class="btn" onclick="dictate()">Micrófono</button><textarea id="input" placeholder="Escribe o dicta una orden..."></textarea><button class="btn" onclick="sendMsg()">Enviar</button></div><div class="small">Enter envía. Mayús+Enter inserta una línea. Las acciones sensibles siguen requiriendo aprobación.</div></div>
+</section></div>
+<script>
+const chat=document.getElementById('chat'),panel=document.getElementById('panel'),input=document.getElementById('input'),voiceSel=document.getElementById('voice'),statusEl=document.getElementById('status');
+let voices=[],speechMode=localStorage.getItem('omniSpeech')||'auto';
+function loadVoices(){voices=speechSynthesis.getVoices();voiceSel.innerHTML='';let p=Number(localStorage.getItem('omniVoice')||-1);voices.forEach((v,i)=>{const o=document.createElement('option');o.value=i;o.textContent=v.name+' — '+v.lang;voiceSel.appendChild(o);if(p<0){const n=(v.name+' '+v.lang).toLowerCase();if(n.includes('microsoft laura')||n.includes('natural')&&n.includes('es'))p=i}});if(p<0)p=voices.findIndex(v=>v.lang&&v.lang.toLowerCase().startsWith('es'));if(p>=0)voiceSel.value=p}
+speechSynthesis.onvoiceschanged=loadVoices;loadVoices();voiceSel.onchange=()=>localStorage.setItem('omniVoice',voiceSel.value);
+function speak(t){if(speechMode!=='auto'||!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);const v=voices[Number(voiceSel.value)];if(v)u.voice=v;u.lang=v?.lang||'es-ES';speechSynthesis.speak(u)}
+function toggleSpeech(){speechMode=speechMode==='auto'?'silent':'auto';localStorage.setItem('omniSpeech',speechMode);document.getElementById('speechBtn').textContent='Voz: '+(speechMode==='auto'?'automática':'silencio')}
+toggleSpeech();toggleSpeech();
+function testVoice(){const old=speechMode;speechMode='auto';speak('Soy Mi Segundo Yo. Esta voz leerá mis respuestas reales.');speechMode=old}
+function add(w,t){const d=document.createElement('div');d.className='msg';const a=document.createElement('div');a.className='who';a.textContent=w;const b=document.createElement('div');b.textContent=t;d.append(a,b);chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
+function showChat(){panel.classList.remove('active');chat.style.display='block'}
+function showText(title,text){chat.style.display='none';panel.classList.add('active');panel.innerHTML='<h2>'+title+'</h2><div class="card"></div>';panel.querySelector('.card').textContent=text;speak(text)}
+async function api(path,opt={}){const r=await fetch(path,opt);if(!r.ok)throw new Error(await r.text());return r.json()}
+async function sendMsg(){const t=input.value.trim();if(!t)return;showChat();add('Tú',t);input.value='';statusEl.textContent='trabajando…';try{const r=await api('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t})});add('Mi Segundo Yo',r.reply);speak(r.reply);statusEl.textContent=r.route||'listo'}catch(e){const m='No pude contactar con el runtime local: '+e.message;add('Sistema',m);statusEl.textContent='sin runtime'}}
+async function loadStatus(){try{const s=await api('/api/status');showText('Estado del sistema',JSON.stringify(s,null,2))}catch(e){showText('Estado','Runtime no disponible: '+e.message)}}
+async function loadSuggestions(){try{const s=await api('/api/suggestions');showText('Sugerencias monetizables',(s.suggestions||[]).map((x,i)=>(i+1)+'. '+x).join('\n\n')||'No hay sugerencias todavía.')}catch(e){showText('Sugerencias','No disponible: '+e.message)}}
+async function queueRevenue(){try{const s=await api('/api/revenue',{method:'POST'});showText('Trabajo autónomo',s.message)}catch(e){showText('Trabajo autónomo','No disponible: '+e.message)}}
+function dictate(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){add('Sistema','El dictado no está disponible en esta sesión.');return}const r=new R();r.lang='es-ES';r.onresult=e=>{input.value=e.results[0][0].transcript;input.focus()};r.start()}
+input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}});
+(async()=>{try{const s=await api('/api/status');statusEl.textContent='runtime activo · '+(s.local_model||'sin modelo local');if(s.greeting){add('Mi Segundo Yo',s.greeting);speak(s.greeting)}}catch(e){statusEl.textContent='runtime no conectado'}})();
+</script>
+</body></html>
